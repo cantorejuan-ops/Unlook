@@ -22,104 +22,107 @@ html,body{margin:0;height:100%;overflow:hidden}
 body{background:#000;color:#fff;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;touch-action:manipulation;
   font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Roboto,system-ui,sans-serif}
 button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
-#app{position:fixed;inset:0;display:flex;flex-direction:column;overflow:hidden}
+
+/* fondo de pantalla */
+#wall{position:fixed;inset:0;z-index:0;background-size:cover;background-position:center}
+#scrim{position:fixed;inset:0;z-index:1;pointer-events:none}
+body.ios #scrim{background:linear-gradient(180deg,rgba(0,0,0,.28),rgba(0,0,0,0) 28%,rgba(0,0,0,0) 55%,rgba(0,0,0,.45))}
+body.android #scrim{background:linear-gradient(180deg,rgba(0,0,0,.25),rgba(0,0,0,0) 40%,rgba(0,0,0,.35))}
+
+#app{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;overflow:hidden}
 .wrap{flex:1;display:flex;flex-direction:column;max-width:480px;width:100%;margin:0 auto;
-  padding:calc(env(safe-area-inset-top) + 8px) 20px calc(env(safe-area-inset-bottom) + 20px)}
+  padding:calc(env(safe-area-inset-top) + 18px) 22px calc(env(safe-area-inset-bottom) + 18px)}
 
-/* fondo */
-body.ios{background:radial-gradient(130% 100% at 50% 0%,#20242c 0%,#0a0c10 55%,#000 100%)}
-body.android{background:linear-gradient(170deg,#1b2430 0%,#0e1116 60%,#05070a 100%)}
+.lockico{width:24px;height:24px;opacity:.95;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
 
-#statusbar{height:22px;display:flex;align-items:center;justify-content:space-between;font-size:13px;opacity:.85;padding:0 4px}
-#statusbar .r{display:flex;gap:6px;align-items:center}
+/* ---- reloj iPhone: centrado, fecha arriba ---- */
+body.ios .clock{text-align:center;margin-top:3vh}
+body.ios .lockico{display:block;margin:0 auto 14px}
+body.ios .date{font-size:16px;font-weight:600;opacity:.95;margin-bottom:2px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
+body.ios .time{font-size:84px;font-weight:600;line-height:1;letter-spacing:-1px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
 
-/* reloj */
-.clock{text-align:center;margin-top:6vh}
-body.android .clock{text-align:left;margin-top:7vh;padding-left:6px}
-.lockico{width:26px;height:26px;opacity:.9;margin:0 auto 10px}
-body.android .lockico{margin:0 0 14px}
-.time{font-weight:300;line-height:1;letter-spacing:-2px}
-body.ios .time{font-size:78px}
-body.android .time{font-size:72px;font-weight:400}
-.date{font-size:17px;opacity:.85;margin-top:6px;font-weight:400}
+/* ---- reloj Android: izquierda, fecha abajo ---- */
+body.android .clock{text-align:left;margin-top:5vh;padding-left:4px;display:flex;flex-direction:column;align-items:flex-start}
+body.android .lockico{order:1}body.android .time{order:2}body.android .date{order:3}
+body.ios .clock{display:flex;flex-direction:column;align-items:center}
+body.android .lockico{display:block;margin:0 0 16px}
+body.android .time{font-family:Roboto,system-ui,sans-serif;font-size:76px;font-weight:300;line-height:.95;letter-spacing:-1px;text-shadow:0 2px 8px rgba(0,0,0,.3)}
+body.android .date{font-family:Roboto,system-ui,sans-serif;font-size:16px;font-weight:400;opacity:.92;margin-top:8px;text-shadow:0 1px 3px rgba(0,0,0,.35)}
 
 .spacer{flex:1}
 
 /* zona PIN */
-.pinarea{display:flex;flex-direction:column;align-items:center;gap:14px;margin-bottom:10px}
-.pintxt{font-size:15px;opacity:.85;min-height:20px}
-.dots{display:flex;gap:16px;height:14px;align-items:center}
-.dot{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(255,255,255,.75);transition:background .1s}
+.pinarea{display:flex;flex-direction:column;align-items:center;gap:16px;margin-bottom:12px}
+.pintxt{font-size:15px;opacity:.9;min-height:20px;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+.dots{display:flex;gap:17px;height:14px;align-items:center}
+.dot{width:11px;height:11px;border-radius:50%;border:1.5px solid rgba(255,255,255,.85);transition:background .1s;box-shadow:0 1px 2px rgba(0,0,0,.3)}
 .dot.on{background:#fff}
-body.android .dot{width:9px;height:9px;border-width:0;background:rgba(255,255,255,.35)}
+body.android .dot{width:9px;height:9px;border-width:0;background:rgba(255,255,255,.4)}
 body.android .dot.on{background:#fff}
 .shake{animation:shk .4s}
 @keyframes shk{10%,90%{transform:translateX(-2px)}20%,80%{transform:translateX(4px)}30%,50%,70%{transform:translateX(-8px)}40%,60%{transform:translateX(8px)}}
 
-/* teclado */
 .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:300px;margin:0 auto;width:100%}
 .key{aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  background:rgba(255,255,255,.14);font-weight:400;transition:filter .12s,background .12s}
-.key:active,.key.p{filter:brightness(1.6)}
-.key .n{font-size:30px;line-height:1}
-.key .l{font-size:10px;letter-spacing:2px;opacity:.8;margin-top:2px;height:11px}
-body.android .key{background:rgba(255,255,255,.07)}
+  background:rgba(255,255,255,.18);backdrop-filter:blur(2px);font-weight:400;transition:filter .12s,background .12s}
+.key:active,.key.p{filter:brightness(1.5)}
+.key .n{font-size:31px;line-height:1}
+.key .l{font-size:10px;letter-spacing:2px;opacity:.85;margin-top:2px;height:11px}
+body.android .key{background:rgba(255,255,255,.1)}
 body.android .key .n{font-size:28px;font-weight:400}
 .key.blank{background:none;pointer-events:none}
 .key.act{background:none}
-.key.act svg{width:26px;height:26px;opacity:.9}
-.foot{display:flex;justify-content:space-between;max-width:300px;margin:18px auto 0;width:100%;font-size:16px;opacity:.9}
+.key.act svg{width:26px;height:26px;opacity:.95;filter:drop-shadow(0 1px 2px rgba(0,0,0,.4))}
+.foot{display:flex;justify-content:space-between;max-width:300px;margin:18px auto 0;width:100%;font-size:16px;opacity:.95;text-shadow:0 1px 2px rgba(0,0,0,.4)}
 .foot button{padding:6px 2px}
-body.android .foot{justify-content:center;gap:40px;font-size:14px;opacity:.8}
+body.android .foot{justify-content:center;font-size:14px;opacity:.85}
 
-#dot-ind{position:fixed;top:5px;left:5px;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.25;display:none;z-index:6}
+#armzone{position:fixed;top:0;right:0;width:84px;height:70px;z-index:6}
+#dot-ind{position:fixed;top:calc(env(safe-area-inset-top) + 2px);left:6px;width:5px;height:5px;border-radius:50%;background:#fff;opacity:.3;display:none;z-index:7}
 
-/* ===== Desbloqueo ===== */
-#blank{position:fixed;inset:0;z-index:4;display:none;background:#000}
+/* desbloqueo */
+#blank{position:fixed;inset:0;z-index:5;display:none;background:#000}
 #blank.show{display:block}
-body.opening .lockico path:last-child{transform:translateX(4px) rotate(14deg);transform-origin:12px 9px;transition:transform .3s}
+body.opening .lockico path:last-child{transform:translateX(3px) rotate(14deg);transform-origin:12px 9px;transition:transform .3s}
 
-/* ===== Panel secreto ===== */
-#cfg{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:20;display:flex;align-items:flex-end;justify-content:center;
-  font-family:system-ui,-apple-system,Roboto,sans-serif}
+/* ===== Panel ===== */
+#cfg{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:20;display:flex;align-items:flex-end;justify-content:center;font-family:system-ui,-apple-system,Roboto,sans-serif}
 #cfg[hidden]{display:none}
-.sheet{background:#1e1f24;color:#eee;width:100%;max-width:480px;max-height:92dvh;overflow:auto;border-radius:22px 22px 0 0;
+.sheet{background:#1e1f24;color:#eee;width:100%;max-width:480px;max-height:94dvh;overflow:auto;border-radius:22px 22px 0 0;
   padding:20px 18px calc(env(safe-area-inset-bottom) + 28px);user-select:auto;-webkit-user-select:auto}
 .sheet h2{margin:0 0 4px;font-size:19px;font-weight:600}
 .sheet .lbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:#9aa0aa;margin:18px 0 7px}
 .seg{display:flex;flex-wrap:wrap;gap:6px}
 .seg button{background:#2c2e35;color:#ddd;padding:9px 13px;border-radius:10px;font-size:14px}
 .seg button.on{background:#8ab4f8;color:#06214a;font-weight:600}
+.walls{display:flex;gap:9px;flex-wrap:wrap}
+.walls .w{width:52px;height:88px;border-radius:12px;border:2px solid transparent;background-size:cover;background-position:center;position:relative}
+.walls .w.on{border-color:#8ab4f8}
+.walls .up{display:flex;align-items:center;justify-content:center;background:#2c2e35;color:#8ab4f8;font-size:22px}
 .help{font-size:13.5px;line-height:1.5;color:#b8bcc6;margin:10px 0 0}
 .help.small{font-size:12px;color:#8a8f99}
 .chk{display:flex;gap:10px;align-items:center;font-size:14px;margin-top:14px;color:#ccc}
 .chk input{width:20px;height:20px}
-.sheet input{width:100%;background:#2c2e35;border:1px solid #3a3d46;color:#fff;border-radius:10px;padding:10px 12px;font-size:16px;-webkit-user-select:text;user-select:text}
-.fields{display:flex;gap:8px;margin-top:8px}.fields>div{flex:1}.fields small{font-size:12px;color:#9aa0aa;display:block;margin-bottom:5px}
-#copySpy{margin-top:8px;width:100%;padding:10px;border-radius:10px;background:#2c2e35;color:#8ab4f8;font-size:14px;font-weight:600}
 #spyBox{background:#15161a;border:1px solid #2c2e35;border-radius:12px;padding:12px;margin-top:8px;min-height:44px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:15px;line-height:1.7;color:#e6e6e6;word-break:break-all}
 #spyBox .empty{color:#6a6f78;font-family:system-ui;font-size:13.5px}
 #spyBox b{color:#8ab4f8}
+#copySpy{margin-top:8px;width:100%;padding:10px;border-radius:10px;background:#2c2e35;color:#8ab4f8;font-size:14px;font-weight:600}
 .row{display:flex;gap:8px;margin-top:16px}
 .row button{flex:1;padding:12px;border-radius:12px;font-size:15px;font-weight:600}
 #reset{background:#2c2e35;color:#ddd}
-#relock{background:#8ab4f8;color:#06214a}
+#start{background:#8ab4f8;color:#06214a}
 #installBtn{width:100%;margin-top:10px;padding:12px;border-radius:12px;background:#2c2e35;color:#8ab4f8;font-size:15px;font-weight:600}
 #installBox{margin-top:6px}
-#close{width:100%;margin-top:8px;padding:12px;border-radius:12px;background:transparent;color:#9aa0aa;font-size:15px}
 #state{font-size:12px;margin-left:6px;padding:3px 8px;border-radius:8px;background:#2c2e35;color:#9aa0aa;vertical-align:middle}
 #state.on{background:#1f4d2e;color:#9fe3b4}
 
-/* peek del espía */
-#peek{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;padding:28px;
-  font-family:ui-monospace,Menlo,Consolas,monospace}
+#peek{position:fixed;inset:0;z-index:25;background:rgba(0,0,0,.84);display:none;align-items:center;justify-content:center;padding:28px;font-family:ui-monospace,Menlo,Consolas,monospace}
 #peek.show{display:flex}
 #peek .pk{max-width:360px;width:100%}
 #peek h3{font-family:system-ui;font-size:14px;color:#8ab4f8;margin:0 0 12px;letter-spacing:.04em;text-transform:uppercase}
-#peek ol{margin:0;padding-left:26px;font-size:21px;line-height:1.8}
+#peek .num{font-size:52px;font-weight:700;color:#fff;letter-spacing:2px;text-align:center}
 #peek .empty{font-family:system-ui;color:#888;font-size:15px}
 
-/* instalar */
 #instModal{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:24px;font-family:system-ui,-apple-system,Roboto,sans-serif}
 #instModal.show{display:flex}
 #instModal .box{background:#1e1f24;color:#eee;border-radius:20px;padding:20px;max-width:360px;width:100%}
@@ -129,15 +132,16 @@ body.opening .lockico path:last-child{transform:translateX(4px) rotate(14deg);tr
 </style>
 </head>
 <body class="ios">
+<div id="wall"></div>
+<div id="scrim"></div>
 <div id="dot-ind"></div>
+<div id="armzone"></div>
 
 <div id="app"><div class="wrap">
-  <div id="statusbar"><span id="sb-carrier">Movistar</span><span class="r"><span>5G</span><span id="sb-batt">82%</span></span></div>
-
   <div class="clock" id="clock">
     <svg class="lockico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+    <div class="date" id="big-date">miércoles, 18 de noviembre</div>
     <div class="time" id="big-time">09:41</div>
-    <div class="date" id="big-date">lunes, 17 de noviembre</div>
   </div>
 
   <div class="spacer"></div>
@@ -164,18 +168,19 @@ body.opening .lockico path:last-child{transform:translateX(4px) rotate(14deg);tr
   <div class="foot" id="foot"><button data-a="sos">Emergencia</button><button data-a="del2">Borrar</button></div>
 </div></div>
 
-<!-- Capa de desbloqueo (negra; luego el celu muestra el escritorio real) -->
 <div id="blank"></div>
 
-<!-- Peek espía -->
 <div id="peek"><div class="pk"><h3>Lo que tecleó</h3><div id="peekBody"></div></div></div>
 
-<!-- Panel secreto -->
 <div id="cfg" hidden><div class="sheet">
   <h2>Preparar el juego <span id="state">Fallará</span></h2>
 
   <div class="lbl">Estética</div>
   <div class="seg" data-k="theme"><button data-v="ios">iPhone</button><button data-v="android">Android</button></div>
+
+  <div class="lbl">Fondo de pantalla</div>
+  <div class="walls" id="walls"></div>
+  <input type="file" id="wallFile" accept="image/*" hidden>
 
   <div class="lbl">Se desbloquea…</div>
   <div class="seg" data-k="mode"><button data-v="count">En el intento N.º</button><button data-v="manual">Cuando yo lo decida</button></div>
@@ -191,21 +196,17 @@ body.opening .lockico path:last-child{transform:translateX(4px) rotate(14deg);tr
   <label class="chk"><input type="checkbox" id="wrongChk"> Mostrar «Código incorrecto» cuando falla</label>
   <label class="chk"><input type="checkbox" id="dotChk"> Punto casi invisible arriba a la izquierda cuando puede abrirse</label>
 
-  <div class="lbl">Barra de estado</div>
-  <div class="fields">
-    <div><small>Operador</small><input type="text" id="carrierInp" autocomplete="off"></div>
-    <div><small>Batería % (si el sistema no la da)</small><input type="text" id="battInp" inputmode="numeric" autocomplete="off"></div>
-  </div>
+  <div class="lbl">¿Qué número guardo?</div>
+  <div class="seg" data-k="capture"><button data-v="1">Intento 1.º</button><button data-v="2">2.º</button><button data-v="3">3.º</button><button data-v="4">4.º</button><button data-v="5">5.º</button></div>
 
-  <div class="lbl">Espía — lo que tecleó</div>
+  <div class="lbl">Espía — el número guardado</div>
   <div id="spyBox"><span class="empty">Todavía no tecleó nada.</span></div>
-  <button id="copySpy">Copiar números</button>
+  <button id="copySpy">Copiar número</button>
 
-  <div class="row"><button id="reset">Reiniciar</button><button id="relock">Bloquear ahora</button></div>
+  <div class="row"><button id="reset">Reiniciar</button><button id="start">Bloquear ahora</button></div>
   <button id="installBtn">📲 Instalar como app</button>
   <div id="installBox" class="help" hidden></div>
-  <button id="close">Cerrar</button>
-  <p class="help small">Abrí este panel manteniendo apretado el reloj ~1 seg · <b>Espiar en vivo:</b> tocá el reloj 3 veces rápido para ver lo que tecleó · En modo «cuando yo lo decida», tocá una vez la barra de arriba (la hora/batería) para que el <b>próximo</b> intento abra · «Reiniciar» borra el espía y vuelve a bloquear.</p>
+  <p class="help small">Abrí este menú manteniendo apretado el reloj ~1 seg · <b>Espiar:</b> tocá el reloj 3 veces rápido · En modo «cuando yo lo decida», tocá una vez la esquina de arriba a la derecha para que el <b>próximo</b> intento abra · La barra de hora y batería es la real del celular; la app ya no dibuja una encima.</p>
 </div></div>
 
 <div id="instModal"><div class="box"><h3>Instalar Bloqueo</h3><div id="instSteps"></div><button id="instClose">Entendido</button></div></div>
@@ -213,55 +214,64 @@ body.opening .lockico path:last-child{transform:translateX(4px) rotate(14deg);tr
 <script>
 (function(){
 const $=s=>document.querySelector(s);
-const DEF={theme:'ios',mode:'count',openOn:'3',len:'4',wrong:false,dot:false,exit:'close',carrier:'Movistar',batt:'82'};
+const PRESETS={
+  noche:'linear-gradient(170deg,#1b2a4a 0%,#0e1524 55%,#05070d 100%)',
+  amanecer:'linear-gradient(170deg,#6a7bb5 0%,#b98fb0 45%,#7a5a84 100%)',
+  bosque:'linear-gradient(170deg,#1e3a34 0%,#122622 55%,#070f0d 100%)',
+  negro:'#000',
+  gris:'linear-gradient(170deg,#3a3f47 0%,#20242b 60%,#111318 100%)'
+};
+const WALLORDER=['noche','amanecer','bosque','gris','negro'];
+const DEF={theme:'ios',mode:'count',openOn:'3',len:'4',wrong:false,dot:false,exit:'close',capture:'1',wall:'noche',wallData:''};
+const UA=navigator.userAgent||'';
+const hadCfg=localStorage.getItem('spy-cfg');
 let cfg=Object.assign({},DEF);
-try{Object.assign(cfg,JSON.parse(localStorage.getItem('spy-cfg')||'{}'))}catch(e){}
+try{Object.assign(cfg,JSON.parse(hadCfg||'{}'))}catch(e){}
+if(!hadCfg){ cfg.theme=/android/i.test(UA)?'android':'ios'; }  // toma la estética del sistema
 function save(){try{localStorage.setItem('spy-cfg',JSON.stringify(cfg))}catch(e){}}
-let log=[];try{log=JSON.parse(localStorage.getItem('spy-log')||'[]')}catch(e){}
-function saveLog(){try{localStorage.setItem('spy-log',JSON.stringify(log))}catch(e){}}
+let cap=localStorage.getItem('spy-cap')||'';
+function saveCap(){try{localStorage.setItem('spy-cap',cap)}catch(e){}}
 
-let entry='', attempts=0, armNext=false, locked=true, battReal=false;
-(async function(){ try{ if(navigator.getBattery){ const bm=await navigator.getBattery();
-  const upd=()=>{ battReal=true; const el=document.getElementById('sb-batt'); if(el) el.textContent=Math.round(bm.level*100)+'%'; };
-  upd(); bm.addEventListener('levelchange',upd); } }catch(e){} })();
+let entry='', attempts=0, armNext=false, locked=true;
 
-/* ---------- reloj ---------- */
-const DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
-const MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+/* reloj real */
+let H12=false; try{ H12=new Intl.DateTimeFormat([], {hour:'numeric'}).resolvedOptions().hour12===true; }catch(e){}
+let FDATE; try{ FDATE=new Intl.DateTimeFormat([], {weekday:'long',day:'numeric',month:'long'}); }catch(e){}
+function fmtTime(d){ let h=d.getHours(); const m=String(d.getMinutes()).padStart(2,'0'); if(H12){ h=h%12||12; return h+':'+m; } return String(h).padStart(2,'0')+':'+m; }
 function tick(){
   const d=new Date();
-  const hh=String(d.getHours()).padStart(2,'0'), mm=String(d.getMinutes()).padStart(2,'0');
-  const t=hh+':'+mm, fecha=DIAS[d.getDay()]+', '+d.getDate()+' de '+MESES[d.getMonth()];
-  $('#big-time').textContent=t; $('#big-date').textContent=fecha;
+  $('#big-time').textContent=fmtTime(d);
+  $('#big-date').textContent=FDATE?FDATE.format(d):d.toDateString();
 }
 tick(); setInterval(tick,1000);
 
-/* ---------- dots ---------- */
+/* fondo */
+function applyWall(){
+  const w=$('#wall');
+  if(cfg.wall==='custom'&&cfg.wallData){ w.style.background='#000'; w.style.backgroundImage='url('+cfg.wallData+')'; }
+  else { w.style.backgroundImage='none'; w.style.background=PRESETS[cfg.wall]||PRESETS.noche; }
+}
+
+/* dots */
 function renderDots(){
-  const n=parseInt(cfg.len), box=$('#dots');
-  box.innerHTML='';
+  const n=parseInt(cfg.len), box=$('#dots'); box.innerHTML='';
   for(let i=0;i<n;i++){const s=document.createElement('span');s.className='dot'+(i<entry.length?' on':'');box.appendChild(s)}
 }
 function pinText(){$('#pintxt').textContent=cfg.theme==='android'?'Ingresá el PIN':'Ingresá el código'}
 
-/* ---------- lógica ---------- */
-function press(d){
-  if(!locked)return;
-  const n=parseInt(cfg.len);
+/* lógica */
+function pressDigit(d){
+  if(!locked)return; const n=parseInt(cfg.len);
   if(entry.length>=n)return;
   entry+=d; renderDots();
   if(entry.length===n) setTimeout(submit,120);
 }
 function del(){ if(!locked)return; entry=entry.slice(0,-1); renderDots(); }
 function submit(){
-  const val=entry;
-  log.push(val); saveLog(); renderSpy();
   attempts++;
-  let open=false;
-  if(cfg.mode==='manual') open=armNext;
-  else open=attempts>=parseInt(cfg.openOn);
-  if(open){ armNext=false; updateDot(); unlock(); }
-  else { fail(); }
+  if(attempts===parseInt(cfg.capture)){ cap=entry; saveCap(); renderSpy(); }  // guarda SOLO el intento elegido
+  let open = cfg.mode==='manual' ? armNext : attempts>=parseInt(cfg.openOn);
+  if(open){ armNext=false; updateDot(); unlock(); } else { fail(); }
 }
 function fail(){
   const box=$('#dots'); box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
@@ -269,13 +279,12 @@ function fail(){
   setTimeout(()=>{ entry=''; renderDots(); pinText(); }, 450);
 }
 function unlock(){
-  entry=''; renderDots();
-  locked=false;
+  entry=''; renderDots(); locked=false;
   document.body.classList.add('opening');
   setTimeout(function(){
     $('#blank').classList.add('show');
     if(cfg.exit!=='black'){ try{ window.close(); }catch(e){} }
-  }, 280);
+  },280);
 }
 function relock(){
   locked=true; entry=''; attempts=0; armNext=false;
@@ -283,86 +292,100 @@ function relock(){
   $('#blank').classList.remove('show'); renderDots(); pinText(); updateDot();
 }
 
-/* ---------- espía ---------- */
+/* espía */
 function renderSpy(){
-  const box=$('#spyBox');
-  if(!log.length){box.innerHTML='<span class="empty">Todavía no tecleó nada.</span>';}
-  else box.innerHTML=log.map((v,i)=>'<div><b>'+(i+1)+'.</b> '+v+'</div>').join('');
-  const pb=$('#peekBody');
-  pb.innerHTML=log.length?'<ol>'+log.map(v=>'<li>'+v+'</li>').join('')+'</ol>':'<div class="empty">Todavía no tecleó nada.</div>';
+  $('#spyBox').innerHTML = cap ? '<b>'+cap+'</b>' : '<span class="empty">Todavía no tecleó nada.</span>';
+  $('#peekBody').innerHTML = cap ? '<div class="num">'+cap+'</div>' : '<div class="empty">Todavía no tecleó nada.</div>';
 }
 
-/* ---------- indicador ---------- */
 function canOpenNext(){ return cfg.mode==='manual' ? armNext : (attempts+1>=parseInt(cfg.openOn)); }
 function updateDot(){ $('#dot-ind').style.display=(cfg.dot&&locked&&canOpenNext())?'block':'none'; }
 
-/* ---------- render general ---------- */
 function render(){
-  document.body.className=cfg.theme;
-  $('#themeColor').setAttribute('content',cfg.theme==='android'?'#0e1116':'#000000');
+  document.body.className=cfg.theme+(document.body.classList.contains('opening')?' opening':'');
+  $('#themeColor').setAttribute('content', cfg.wall==='negro'?'#000000':(cfg.theme==='android'?'#0e1116':'#000000'));
   $('#foot').style.display=cfg.theme==='android'?'none':'flex';
-  $('#sb-carrier').textContent=cfg.carrier||'';
-  if(!battReal) $('#sb-batt').textContent=(cfg.batt||'').replace('%','')+'%';
-  renderDots(); pinText(); updateDot();
+  applyWall(); renderDots(); pinText(); updateDot();
 }
 
-/* ---------- teclado ---------- */
+/* teclado */
 document.querySelectorAll('#keys .key').forEach(b=>{
   b.addEventListener('pointerdown',()=>b.classList.add('p'));
   ['pointerup','pointerleave','pointercancel'].forEach(e=>b.addEventListener(e,()=>b.classList.remove('p')));
-  b.addEventListener('click',()=>{ if(b.dataset.d!=null)press(b.dataset.d); else if(b.dataset.a==='del')del(); updateDot(); });
+  b.addEventListener('click',()=>{ if(b.dataset.d!=null)pressDigit(b.dataset.d); else if(b.dataset.a==='del')del(); updateDot(); });
 });
 $('#foot').addEventListener('click',e=>{const a=e.target.dataset.a;if(a==='del2')del();updateDot()});
 
-/* ---------- gestos secretos ---------- */
+/* gestos */
 let lp=null, lpFired=false, taps=[];
 const clock=$('#clock');
 clock.addEventListener('pointerdown',()=>{lpFired=false;lp=setTimeout(()=>{lpFired=true;openCfg()},800)});
 ['pointerup','pointerleave','pointercancel'].forEach(e=>clock.addEventListener(e,()=>clearTimeout(lp)));
-clock.addEventListener('click',()=>{
-  if(lpFired)return;
-  const now=Date.now(); taps=taps.filter(t=>now-t<600); taps.push(now);
-  if(taps.length>=3){ taps=[]; showPeek(); }
-});
-// barra de estado: armar próximo (modo manual)
-$('#statusbar').addEventListener('click',()=>{ if(cfg.mode==='manual'&&locked){armNext=true;updateDot();} });
-// pantalla negra: mantener apretado para volver a bloquear (si no se cerró la app)
+clock.addEventListener('click',()=>{ if(lpFired)return; const now=Date.now(); taps=taps.filter(t=>now-t<600); taps.push(now); if(taps.length>=3){taps=[];$('#peek').classList.add('show');} });
+$('#armzone').addEventListener('click',()=>{ if(cfg.mode==='manual'&&locked){armNext=true;updateDot();} });
+$('#peek').addEventListener('click',()=>$('#peek').classList.remove('show'));
 let hlp=null;
 $('#blank').addEventListener('pointerdown',()=>{hlp=setTimeout(()=>{relock();openCfg()},800)});
 ['pointerup','pointerleave','pointercancel'].forEach(e=>$('#blank').addEventListener(e,()=>clearTimeout(hlp)));
 
-function showPeek(){ $('#peek').classList.add('show'); }
-$('#peek').addEventListener('click',()=>$('#peek').classList.remove('show'));
-
-/* ---------- panel ---------- */
+/* panel */
 let ct=null;
-function openCfg(){ syncCfg(); $('#cfg').hidden=false; clearInterval(ct); ct=setInterval(tick,10000); }
+function openCfg(){ syncCfg(); $('#cfg').hidden=false; clearInterval(ct); ct=setInterval(tick,1000); }
 function closeCfg(){ $('#cfg').hidden=true; render(); }
+function buildWalls(){
+  const box=$('#walls'); box.innerHTML='';
+  WALLORDER.forEach(k=>{
+    const d=document.createElement('button'); d.className='w'; d.dataset.w=k; d.style.background=PRESETS[k]; d.style.backgroundSize='cover';
+    box.appendChild(d);
+  });
+  const cust=document.createElement('button'); cust.className='w'; cust.dataset.w='custom'; cust.id='wallCustom'; cust.style.backgroundSize='cover';
+  box.appendChild(cust);
+  const up=document.createElement('button'); up.className='w up'; up.id='wallUp'; up.textContent='+';
+  box.appendChild(up);
+}
+function syncWalls(){
+  if(cfg.wallData) $('#wallCustom').style.backgroundImage='url('+cfg.wallData+')';
+  $('#wallCustom').style.display=cfg.wallData?'block':'none';
+  document.querySelectorAll('#walls .w').forEach(b=>b.classList.toggle('on',b.dataset.w===cfg.wall));
+}
 function syncCfg(){
   document.querySelectorAll('.seg').forEach(s=>s.querySelectorAll('button').forEach(b=>b.classList.toggle('on',String(cfg[s.dataset.k])===b.dataset.v)));
   $('#countWrap').style.display=cfg.mode==='count'?'block':'none';
   $('#wrongChk').checked=cfg.wrong; $('#dotChk').checked=cfg.dot;
-  $('#carrierInp').value=cfg.carrier||''; $('#battInp').value=cfg.batt||'';
   $('#state').textContent = locked ? (canOpenNext()?'Próximo abre':'Fallará') : 'Desbloqueada';
   $('#state').classList.toggle('on', locked && canOpenNext());
-  renderSpy();
+  syncWalls(); renderSpy();
 }
 document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{
   const k=b.parentNode.dataset.k; cfg[k]=b.dataset.v; save();
-  if(k==='theme'){document.body.className=cfg.theme}
-  renderDots(); pinText(); syncCfg();
+  if(k==='theme')document.body.className=cfg.theme;
+  render(); syncCfg();
 }));
-$('#carrierInp').addEventListener('input',e=>{cfg.carrier=e.target.value;save();$('#sb-carrier').textContent=cfg.carrier});
-$('#battInp').addEventListener('input',e=>{cfg.batt=e.target.value;save();if(!battReal)$('#sb-batt').textContent=(cfg.batt||'').replace('%','')+'%'});
-$('#copySpy').addEventListener('click',async function(){ if(!log.length)return; try{ await navigator.clipboard.writeText(log.join(', ')); this.textContent='¡Copiado!'; setTimeout(()=>this.textContent='Copiar números',1200);}catch(e){ this.textContent='No se pudo copiar'; setTimeout(()=>this.textContent='Copiar números',1200);} });
+$('#walls').addEventListener('click',e=>{
+  const b=e.target.closest('.w'); if(!b)return;
+  if(b.id==='wallUp'){ $('#wallFile').click(); return; }
+  if(b.dataset.w==='custom'&&!cfg.wallData)return;
+  cfg.wall=b.dataset.w; save(); applyWall(); syncWalls();
+});
+$('#wallFile').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  const fr=new FileReader();
+  fr.onload=()=>{ const img=new Image(); img.onload=()=>{
+    const max=1200; let w=img.width,h=img.height; const sc=Math.min(1,max/Math.max(w,h));
+    w=Math.round(w*sc); h=Math.round(h*sc);
+    const c=document.createElement('canvas'); c.width=w; c.height=h; c.getContext('2d').drawImage(img,0,0,w,h);
+    try{ cfg.wallData=c.toDataURL('image/jpeg',0.82); cfg.wall='custom'; save(); applyWall(); syncWalls(); }catch(err){}
+  }; img.src=fr.result; };
+  fr.readAsDataURL(f); e.target.value='';
+});
 $('#wrongChk').addEventListener('change',e=>{cfg.wrong=e.target.checked;save()});
 $('#dotChk').addEventListener('change',e=>{cfg.dot=e.target.checked;save();updateDot()});
-$('#reset').addEventListener('click',()=>{ log=[]; saveLog(); relock(); syncCfg(); });
-$('#relock').addEventListener('click',()=>{ relock(); closeCfg(); });
-$('#close').addEventListener('click',closeCfg);
+$('#copySpy').addEventListener('click',async function(){ if(!cap)return; try{ await navigator.clipboard.writeText(cap); this.textContent='¡Copiado!'; setTimeout(()=>this.textContent='Copiar número',1200);}catch(e){ this.textContent='No se pudo copiar'; setTimeout(()=>this.textContent='Copiar número',1200);} });
+$('#reset').addEventListener('click',()=>{ cap=''; saveCap(); relock(); syncCfg(); });
+$('#start').addEventListener('click',()=>{ relock(); closeCfg(); });
 $('#cfg').addEventListener('click',e=>{if(e.target.id==='cfg')closeCfg()});
 
-/* ---------- instalación ---------- */
+/* instalación */
 const ua=navigator.userAgent||'';
 const iOSdev=/iPad|iPhone|iPod/.test(ua)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const isSafari=/^((?!chrome|crios|fxios|edgios|android).)*safari/i.test(ua);
@@ -380,15 +403,13 @@ $('#instClose').addEventListener('click',()=>$('#instModal').classList.remove('s
 $('#instModal').addEventListener('click',e=>{if(e.target.id==='instModal')$('#instModal').classList.remove('show')});
 if('serviceWorker' in navigator&&location.protocol==='https:'){try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}}
 
-/* ---------- pantalla despierta ---------- */
+/* pantalla despierta */
 let wakeLock=null;
-async function keepAwake(){
-  try{ if('wakeLock' in navigator && document.visibilityState==='visible'){ wakeLock=await navigator.wakeLock.request('screen'); } }catch(e){}
-}
+async function keepAwake(){ try{ if('wakeLock' in navigator && document.visibilityState==='visible'){ wakeLock=await navigator.wakeLock.request('screen'); } }catch(e){} }
 document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='visible') keepAwake(); });
 document.addEventListener('pointerdown',()=>{ if(!wakeLock) keepAwake(); });
 
-renderSpy(); render(); keepAwake(); openCfg();
+buildWalls(); renderSpy(); render(); keepAwake(); openCfg();
 })();
 </script>
 </body>
